@@ -1,6 +1,6 @@
 # Task 04 — Phase 4: MediaProjection foreground service
 
-**Status:** todo
+**Status:** done
 **Depends on:** 00
 **Blocks:** 05
 
@@ -20,4 +20,8 @@ Capture the device display into a `Bitmap` via a properly-typed foreground servi
 - `captureOnce()` returns a Bitmap whose dimensions match the display metrics.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `permissions/MediaProjectionPermissionManager.kt`: wraps `createScreenCaptureIntent()` behind an `ActivityResultLauncher`.
+- 2026-08-07 — `capture/ScreenCaptureService.kt`: foreground service with `foregroundServiceType=mediaProjection`; receives `(resultCode, data)` via start Intent; exposes a `current()` singleton so `TutorSession` can request `captureOnce()`.
+- 2026-08-07 — `capture/MediaProjectionController.kt`: builds `MediaProjection` → `ImageReader` (RGBA_8888) → `VirtualDisplay` on a dedicated HandlerThread. Registers a Callback that tears down on system-triggered stop.
+- 2026-08-07 — `capture/FrameReader.kt`: coroutine-friendly `awaitLatest()`; converts `Image` planes to `Bitmap` with correct row-padding handling.
+- 2026-08-07 — MainActivity wires the consent launcher and starts `ScreenCaptureService.start(this, resultCode, data)`.

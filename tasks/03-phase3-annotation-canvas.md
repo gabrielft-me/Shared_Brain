@@ -1,6 +1,6 @@
 # Task 03 — Phase 3: Annotation Canvas + interaction modes
 
-**Status:** todo
+**Status:** done
 **Depends on:** 01
 **Blocks:** 05
 
@@ -22,4 +22,9 @@ Full-screen transparent Canvas the student can circle / underline on, plus PASSI
 - Exiting ANNOTATE removes the touchable overlay before the tutor card appears.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `overlay/OverlayMode.kt` (PASSIVE / ANNOTATE / RESPONSE).
+- 2026-08-07 — `overlay/AnnotationOverlay.kt`: MATCH_PARENT×MATCH_PARENT TYPE_APPLICATION_OVERLAY, TRANSLUCENT. Attached only in ANNOTATE mode; detached on exit so touches pass through in PASSIVE/RESPONSE.
+- 2026-08-07 — `ink/InkCanvas.kt`: Compose canvas capturing pointer input via `awaitEachGesture`, driving an `AnnotationState`. `onStrokeComplete` fires on pointer-up so OverlayManager can transition to RESPONSE.
+- 2026-08-07 — `ink/AnnotationState.kt`: mutable stroke list in screen-pixel coords + `snapshot()` for immutable handoff.
+- 2026-08-07 — `ink/AnnotationRenderer.kt`: renders strokes onto a raw `android.graphics.Canvas` with configurable scale (used by Phase 5 composer).
+- 2026-08-07 — `OverlayManager.setMode()` performs the attach/detach transitions.

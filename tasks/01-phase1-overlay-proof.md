@@ -1,6 +1,6 @@
 # Task 01 — Phase 1: Overlay proof
 
-**Status:** todo
+**Status:** done
 **Depends on:** 00
 **Blocks:** 02, 03
 
@@ -20,4 +20,8 @@ Show a single draggable `TYPE_APPLICATION_OVERLAY` bubble that stays visible ove
 - No touches are blocked outside the bubble's rectangle (FLAG_NOT_FOCUSABLE + WRAP_CONTENT).
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `permissions/OverlayPermissionManager.kt`: `Settings.canDrawOverlays` + `ACTION_MANAGE_OVERLAY_PERMISSION` intent (package: URI).
+- 2026-08-07 — `overlay/OverlayComposeHost.kt`: LifecycleOwner + ViewModelStoreOwner + SavedStateRegistryOwner shim wrapping a `ComposeView` (plan §14).
+- 2026-08-07 — `overlay/BubbleOverlay.kt`: 56dp Compose circle in TYPE_APPLICATION_OVERLAY (WRAP_CONTENT, FLAG_NOT_FOCUSABLE, TRANSLUCENT), dragged via `updateViewLayout()` with touch-slop → distinguishes drag from tap.
+- 2026-08-07 — `overlay/TutorOverlayService.kt`: foreground service with specialUse FGS type (Android 14+), starts OverlayManager, exposes `start/stop/devShowCard` static entry points.
+- 2026-08-07 — `MainActivity.kt`: three buttons (grant overlay → grant projection → start/stop) + dev button to render a card at (0.6, 0.4).

@@ -1,6 +1,6 @@
 # Task 00 — Scaffold Android project
 
-**Status:** todo
+**Status:** done
 **Depends on:** —
 **Blocks:** all phase tasks
 
@@ -26,4 +26,7 @@ Create a build-ready Android project skeleton matching plan §16–§17, so subs
 - Manifest declares the two services and all permissions above.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — Root Gradle Kotlin DSL (settings.gradle.kts, build.gradle.kts, gradle.properties, gradle wrapper props).
+- 2026-08-07 — app/build.gradle.kts with AGP 8.5.2, Kotlin 1.9.24, Compose BOM 2024.09.02, min/target SDK 26/34, `applicationId = "com.oakland.tutor"`, Retrofit + Moshi + OkHttp deps, `BuildConfig.TUTOR_BASE_URL` default `http://10.0.2.2:8000/`.
+- 2026-08-07 — AndroidManifest.xml declares SYSTEM_ALERT_WINDOW, FOREGROUND_SERVICE, FOREGROUND_SERVICE_MEDIA_PROJECTION, INTERNET, POST_NOTIFICATIONS; MainActivity + TutorOverlayService (foregroundServiceType=specialUse) + ScreenCaptureService (foregroundServiceType=mediaProjection).
+- 2026-08-07 — Full package tree from plan §17 exists under `app/src/main/java/com/oakland/tutor/`; res/values has strings/themes/colors; launcher uses system default icon so no PNG assets are needed.

@@ -1,6 +1,6 @@
 # Task 05 — Phase 5: Composite geometry
 
-**Status:** todo
+**Status:** done
 **Depends on:** 03, 04
 **Blocks:** 06
 
@@ -18,4 +18,5 @@ Render the annotation layer onto a copy of the captured display frame at identic
 - Stroke positions on the composite match on-screen positions (round-trip within ±1 px).
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `capture/FrameComposer.kt`: `compose(screen, annotation)` makes a mutable ARGB_8888 copy of the captured Bitmap and draws strokes via `AnnotationRenderer` at 1:1 scale (both layers use the same screen-pixel coordinate system).
+- 2026-08-07 — `TutorSession` performs the composite on `Dispatchers.Default` before the network upload.

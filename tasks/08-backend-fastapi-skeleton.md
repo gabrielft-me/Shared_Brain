@@ -1,6 +1,6 @@
 # Task 08 — Backend FastAPI skeleton
 
-**Status:** todo
+**Status:** done (stub)
 **Depends on:** —
 **Blocks:** 06 (only for real end-to-end)
 
@@ -22,4 +22,8 @@ Minimal FastAPI service matching the client's contract from plan §12/§16. Can 
 - `curl -F image=@screenshot.png -F 'geometry={"screen_width_px":2560,...}' localhost:8000/v1/tutor/query` returns a valid `TutorResponse`.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `backend/requirements.txt` (fastapi, uvicorn, pydantic, python-multipart, pillow).
+- 2026-08-07 — `backend/app/schemas.py`: Pydantic `Geometry`, `NormalizedPoint`, `NormalizedBox`, `TutorResponse` — mirrors the Kotlin DTOs.
+- 2026-08-07 — `backend/app/services/{vision,pointing,tutor}.py`: interface stubs returning deterministic values so client integration is unblocked.
+- 2026-08-07 — `backend/app/main.py`: `GET /healthz`, `POST /v1/tutor/query` (multipart image + `geometry` JSON) → `TutorResponse` using the stubs.
+- 2026-08-07 — `backend/README.md`: run instructions.
