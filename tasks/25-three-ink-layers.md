@@ -1,6 +1,6 @@
 # Task 25 — Three ink layers in LuminaBoardView (work / AI / annotation)
 
-**Status:** in-progress (phases 2-3 done 2026-08-07; phases 4-7 pending)
+**Status:** in-progress (phases 2-4 done 2026-08-07; phases 5-7 pending)
 **Depends on:** lumina-app `LuminaBoardView` (D-021 canvas), 17/18 (backend grounding), 20 (session)
 **Supersedes:** 24 client sections (written for the deleted Compose workspace)
 **Related decisions:** D-018, D-021 (ai_strokes), D-022, D-024
@@ -165,3 +165,20 @@ choose `arrow`/`underline`/`label`.
 - 2026-08-07 — Concurrent session note: another agent added finger-vs-
   stylus brush fallback (`activeBrush(event)`) and touch flags to the same
   file mid-phase; merged cleanly on top.
+- 2026-08-07 — **Phase 4 done.** `exportFrame(requestId)` rasterizes
+  `PaperSurface` (via `View.draw`) + work + annotation — AI layer excluded —
+  into an ARGB_8888 bitmap, PNG-compresses to `cacheDir/lumina-frame-<id>.png`
+  off the UI thread, and emits `onFrameExported {requestId, path, sceneGraph}`
+  (or `{error}`). **Deviation from plan:** the event carries a `file://` path,
+  not base64 — RN multipart upload takes a file URI directly and megabyte
+  strings over the bridge are pure overhead. Scene graph: `{width_px,
+  height_px, density, strokes: [{id: "w0"/"a3", layer, bbox normalized from
+  input points}]}`. Bboxes come from raw stroke inputs (brush width not
+  added — tight boxes, fine for grounding). Software-canvas note: paper's
+  `drawLine` + `CanvasStrokeRenderer` can share the export canvas — the
+  mesh-invisibility bug that forced split child views is hardware-only.
+  Manager: command `exportFrame`, event `onFrameExported`.
+  `:app:compileDebugKotlin` green. Runtime pixel-check rides with phase 7.
+- 2026-08-07 — Second concurrent-session merge: paper/ink split into
+  `PaperSurface` + `BoardSurface` (hardware-canvas drawMesh bug); export
+  path adapted to compose both onto the software canvas.
