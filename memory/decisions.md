@@ -200,6 +200,33 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
   `HintResult.follow_up_questions`/`next_step` remain server-side (session
   transcript) until the client grows fields for them.
 
+## D-024 — Three ink layers in LuminaBoardView; fading AI ink; canvas rasterization replaces MediaProjection for the tutor loop
+- **Date:** 2026-08-07
+- **Decision:** `LuminaBoardView` gets three stroke collections rendered
+  bottom→top: **work** (student's permanent ink — the data source; the only
+  layer undo/eraser touch), **AI** (tutor explanation ink injected from
+  `TutorResponse.ai_strokes`, auto-fading after a ~8 s hold; never
+  interactive, undoable, persisted, or exported), **annotation** (fixed red
+  "ask about this" ink, interactive only in ANNOTATE mode, cleared after
+  every upload). Perception pivots from MediaProjection screenshots to an
+  `exportFrame` command that rasterizes paper + work + annotation (AI layer
+  excluded) into a PNG plus a vector scene graph — canvas space becomes the
+  canonical coordinate system. AI ink payloads are **semantic primitives**
+  (`circle`/`arrow`/`underline`/`label` with geometry params), synthesized
+  into androidx.ink `Stroke`s client-side; the model never emits raw point
+  lists. Full plan: `tasks/25-three-ink-layers.md`.
+- **Rationale:** All tutoring now happens on our own canvas (D-017/D-021),
+  so rasterizing it directly is deterministic and deletes the
+  MediaProjection permission/FGS/consent friction; vector metadata makes
+  grounding exact and injection trivial. Client-side synthesis keeps stroke
+  quality engineering-controlled (Noteshelf-grade taper/wobble) instead of
+  sampling-controlled.
+- **Consequences:** Supersedes the MediaProjection-retention clause of
+  D-017 (and D-006/D-007 for the in-app flow) — `capture/` stays dead code
+  (already flagged for deletion). Task 24's client sections (Compose
+  `AiStrokeLayer`, `CoordinateMapper`) are superseded by task 25; its
+  contract section is revised there to semantic primitives.
+
 ## D-021 — App shell is React Native + Expo; ink canvas stays native Kotlin (supersedes D-008 UI stack)
 - **Date:** 2026-08-07
 - **Decision:** The Android app now lives in `lumina-app/` (Expo SDK 57,

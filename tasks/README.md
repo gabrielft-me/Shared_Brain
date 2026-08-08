@@ -43,10 +43,10 @@ Progress statuses: `todo`, `in-progress`, `done`, `superseded`.
 | # | File | Plan link | Status |
 |---|------|-----------|--------|
 | 16 | [16-bubble-action-menu.md](16-bubble-action-menu.md) | §4A | todo |
-| 17 | [17-real-vision-model.md](17-real-vision-model.md) | §16 backend | todo |
-| 18 | [18-real-pointing-model.md](18-real-pointing-model.md) | §12, §16 | todo |
-| 19 | [19-tutor-reasoning-layer.md](19-tutor-reasoning-layer.md) | §16 | todo |
-| 20 | [20-backend-session-state.md](20-backend-session-state.md) | §16 (Session state) | todo |
+| 17 | [17-real-vision-model.md](17-real-vision-model.md) | §16 backend | done (live-key acceptance pending) |
+| 18 | [18-real-pointing-model.md](18-real-pointing-model.md) | §12, §16 | done (IoU acceptance pending) |
+| 19 | [19-tutor-reasoning-layer.md](19-tutor-reasoning-layer.md) | §16 | done (rubric review pending) |
+| 20 | [20-backend-session-state.md](20-backend-session-state.md) | §16 (Session state) | done |
 | 21 | [21-androidx-ink-migration.md](21-androidx-ink-migration.md) | §16 (Jetpack Ink) | todo |
 | 22 | [22-backend-https-deployment.md](22-backend-https-deployment.md) | D-014 | todo |
 
@@ -60,7 +60,8 @@ Progress statuses: `todo`, `in-progress`, `done`, `superseded`.
 
 | # | File | Status |
 |---|------|--------|
-| 24 | [24-ai-drawn-annotations.md](24-ai-drawn-annotations.md) | todo |
+| 24 | [24-ai-drawn-annotations.md](24-ai-drawn-annotations.md) | superseded → 25 |
+| 25 | [25-three-ink-layers.md](25-three-ink-layers.md) | todo (planned; D-024) |
 
 ## Working agreement
 

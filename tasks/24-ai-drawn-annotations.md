@@ -1,6 +1,8 @@
 # Task 24 — AI-drawn annotations rendered inside the workspace canvas
 
-**Status:** todo
+**Status:** superseded → 25 (client sections targeted the deleted Compose
+workspace; contract revised in `25-three-ink-layers.md` to semantic
+primitives per D-024)
 **Depends on:** 23 (in-app workspace), 06 (AI pipeline client), 08 (backend skeleton)
 **Related decisions:** D-005, D-007, D-018, D-021
 
