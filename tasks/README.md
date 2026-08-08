@@ -25,7 +25,7 @@ Progress statuses: `todo`, `in-progress`, `done`, `superseded`.
 
 | # | File | Status |
 |---|------|--------|
-| 09 | [09-verify-android-build.md](09-verify-android-build.md) | todo |
+| 09 | [09-verify-android-build.md](09-verify-android-build.md) | done |
 | 10 | [10-emulator-install-and-walkthrough.md](10-emulator-install-and-walkthrough.md) | todo |
 
 ## Phase 7 — polish, split from task 07 (plan §19 steps 30–34)
