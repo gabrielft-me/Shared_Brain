@@ -76,6 +76,7 @@ dependency map.
 | Backend session state missing (§16) | 20 |
 | Jetpack Ink not used (§16) — conditional on 15 | 21 |
 | HTTPS deployment + drop cleartext (D-014) | 22 |
+| AI response confined to hint card, not drawn in the workspace (D-021) | 24 |
 
 Task 07 has been retired as an umbrella pointing at 11..15.
 

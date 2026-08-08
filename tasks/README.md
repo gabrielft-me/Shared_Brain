@@ -56,6 +56,12 @@ Progress statuses: `todo`, `in-progress`, `done`, `superseded`.
 |---|------|--------|
 | 23 | [23-refactor-to-in-app-workspace.md](23-refactor-to-in-app-workspace.md) | done |
 
+## In-canvas AI response
+
+| # | File | Status |
+|---|------|--------|
+| 24 | [24-ai-drawn-annotations.md](24-ai-drawn-annotations.md) | todo |
+
 ## Working agreement
 
 - Read [`../agents.md`](../agents.md) and [`../memory/decisions.md`](../memory/decisions.md)

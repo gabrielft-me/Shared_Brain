@@ -115,6 +115,31 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
 - **How to apply:** Do not add a second draggable in the workspace; the
   student's ink stroke would race with drag detection.
 
+## D-021 — AI responses render as strokes on a dedicated in-canvas layer
+- **Date:** 2026-08-07
+- **Decision:** `TutorResponse` gains an `ai_strokes: list[AiStroke]`
+  field (normalized image coordinates, per D-005). The client renders
+  them on a new non-interactive `AiStrokeLayer` sandwiched between
+  `WorkCanvas` (student work, bottom) and `AnnotationLayer` (transient
+  red "circle-this", top). AI strokes are owned by
+  `WorkspaceController.aiStrokes`; they are **not** part of the
+  student's undo/eraser stack and are cleared on the next Ask or via a
+  toolbar "Clear AI" action.
+- **Rationale:** Extends D-018's two-layer model to three layers so the
+  AI's response is visually native to the page instead of only living in
+  a floating card. Reuses the existing `InkStroke` rendering pipeline
+  and the normalized coordinate contract, so the incremental cost is
+  small. Keeps student ink strictly separated from AI ink at every
+  stage (undo, erase, composite).
+- **How to apply:** New AI marks always come from the backend — never
+  synthesized client-side. First rollout ships geometric primitives only
+  (`kind` ∈ {`circle`, `arrow`, `underline`}); handwriting-style strokes
+  (`kind="handwriting"`) are deferred until a real vectorization path
+  exists. Do not merge AI strokes into `WorkCanvas.strokes` even for
+  convenience; the separation is load-bearing for undo behavior and for
+  Option-B compositing (D-007) — the AI's drawing must not show up in
+  the frame we send back to the model on the next turn.
+
 ## D-013 — Toolchain bump: AGP 8.7.3 / Kotlin 2.0.21 / compileSdk 36 (supersedes D-009 SDK target)
 - **Date:** 2026-08-07
 - **Decision:** Root plugins now `com.android.application 8.7.3` + `org.jetbrains.kotlin.android 2.0.21` + `org.jetbrains.kotlin.plugin.compose 2.0.21`. `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26` unchanged.
