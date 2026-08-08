@@ -60,6 +60,26 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
 - **Decision:** `ScreenCaptureService` (foregroundServiceType=`mediaProjection`) owns projection/virtual-display/image-reader. `TutorOverlayService` owns WindowManager + overlay lifecycle. Overlay service starts/stops with capture service.
 - **Rationale:** Plan §9, §10 — keep capture and UI concerns split; hackathon can bind lifecycles.
 
+## D-013 — Toolchain bump: AGP 8.7.3 / Kotlin 2.0.21 / compileSdk 36 (supersedes D-009 SDK target)
+- **Date:** 2026-08-07
+- **Decision:** Root plugins now `com.android.application 8.7.3` + `org.jetbrains.kotlin.android 2.0.21` + `org.jetbrains.kotlin.plugin.compose 2.0.21`. `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26` unchanged.
+- **Rationale:** The only Android platform installed locally is `android-36`, and the standalone Compose Compiler plugin only exists on Kotlin 2.0+. Bumping avoids a manual `sdkmanager` install of `android-34` and unblocks the build. D-009's `targetSdk = 34` decision is superseded here.
+
+## D-014 — Cleartext HTTP allowed for emulator loopback
+- **Date:** 2026-08-07
+- **Decision:** `android:usesCleartextTraffic="true"` on `<application>`. `BuildConfig.TUTOR_BASE_URL` defaults to `http://10.0.2.2:8000/` for the emulator loop-back to the local FastAPI backend.
+- **Rationale:** Development ergonomics; a real deployment must switch to HTTPS + drop the flag before ship.
+
+## D-015 — TutorOverlayService uses specialUse FGS + matching permission
+- **Date:** 2026-08-07
+- **Decision:** Manifest declares `android.permission.FOREGROUND_SERVICE_SPECIAL_USE` alongside the existing `FOREGROUND_SERVICE_MEDIA_PROJECTION`. `TutorOverlayService` runs with `foregroundServiceType="specialUse"` and a `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` explaining why.
+- **Rationale:** Android 14+ requires the matching permission per FGS type; without it the service crashes on start.
+
+## D-016 — Gradle wrapper committed (Gradle 8.9)
+- **Date:** 2026-08-07
+- **Decision:** `gradlew`, `gradlew.bat`, and `gradle/wrapper/gradle-wrapper.jar` are tracked in git so a fresh clone can `./gradlew :app:assembleDebug` without installing Gradle system-wide.
+- **Rationale:** Standard AOSP practice; keeps CI + local builds hermetic.
+
 ## D-012 — Never modify `Shared_Brain/memory/goal.md`
 - **Date:** 2026-08-07
 - **Decision:** Per `agents.md` rule 5, `goal.md` is human-owned. Agents can read it but never write. Currently it does not exist; leave it missing until the human creates it.
