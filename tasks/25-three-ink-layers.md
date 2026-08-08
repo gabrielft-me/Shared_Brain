@@ -245,3 +245,17 @@ choose `arrow`/`underline`/`label`.
   AI circle (wobble/taper, #C4685E) renders above work ink → fades out
   after the 8 s hold. Backend serving noop canned hints during the pass
   (100–160 ms responses); wire format identical to the anthropic path.
+- 2026-08-08 — **Upload bug found + fixed; real-Claude loop closed.**
+  Expo SDK 57's WinterCG global fetch rejects RN's legacy `{uri, name,
+  type}` FormData parts ("Unsupported FormDataPart implementation" —
+  thrown in `expo/src/winter/fetch/convertFormData.ts`). Fix without a
+  native rebuild: `queryTutor` uploads via `XMLHttpRequest` (rides RN's
+  classic networking stack, streams file:// URIs; 120 s timeout).
+  Long-term alternative: `expo-file-system`'s `File` (implements Blob) —
+  needs the package installed + APK rebuild.
+- 2026-08-08 — **Latency 90 s → 13 s** (Oakland `8fcd22c`): frames
+  downscaled to 1568 px before the API (Sonnet's effective ceiling),
+  vision/pointing at `effort: medium`, and a new `mode` form part —
+  `read` (idle/I'm-stuck) skips the pointing call, `ask` keeps grounding
+  + `ai_strokes`. Live read verified end-to-end: real handwriting frame →
+  Sonnet assessment (`incorrect`/`incorrect_sum`) + Socratic hint in 13 s.
