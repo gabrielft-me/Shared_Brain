@@ -142,6 +142,22 @@ since RN has no CSS `saturate()` filter. `app/(tabs)/shop.tsx` now passes
 `shape` through (tile + detail sheet) and its local disc placeholder is
 deleted. Per D-021 this keeps the RN port pixel-faithful to the web.
 
+## 2026-08-08 — Per-topic question banks wired to onboarding
+
+The RN app's lesson path was hardcoded to the grade-7 equations bank
+regardless of what the student picked in onboarding. New
+`lumina-app/src/data/questionBank.ts`: 16 math topic banks (4 problems
+each, easy→hard, real CCSS/AP standard tags, short handwritable answers)
+keyed by the onboarding topic ids in `curriculum.ts`, each expanded into a
+5-node path (diagnostic → lesson → practice → lesson → checkpoint) by a
+shared builder. `lessons.ts` gains ~16 new misconception entries the banks
+target, plus `lessonsForTopic(topic)`; `AppState` now derives the path from
+`user.onboarding.topic` and marks `diagnosticComplete` by lesson kind
+instead of the hardcoded `'diagnostic'` id. `equations`, english topics and
+unknown ids fall back to the original equations path. English banks are
+deliberately absent (tutor pipeline reads handwritten math);
+`lumina-web` data was not mirrored (its `lessons.ts` diverged). `tsc` green.
+
 ## 2026-08-08 — LuminaBoardView: ink was authored but never rendered (fixed)
 
 Symptom reported as "canvas not reacting to touch": in fact touches always
