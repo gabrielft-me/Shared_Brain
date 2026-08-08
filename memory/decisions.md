@@ -227,6 +227,20 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
   `AiStrokeLayer`, `CoordinateMapper`) are superseded by task 25; its
   contract section is revised there to semantic primitives.
 
+## D-025 — Default backend model downsized to Sonnet 4.6 (amends D-022)
+- **Date:** 2026-08-07
+- **Decision:** `TUTOR_MODEL` default changes `claude-opus-4-7` →
+  `claude-sonnet-4-6` for all three intelligence layers, by explicit user
+  direction (cost/latency). Opus stays one env var away
+  (`TUTOR_MODEL=claude-opus-4-7`); `claude-haiku-4-5` is the floor option.
+- **Consequences:** Amends D-022's rationale: Opus 4.7's high-res vision
+  (2576 px, pixel-accurate coords) was part of why no dedicated grounding
+  model was adopted. Sonnet 4.6 handles images at standard resolution, so
+  2560×1600 canvas exports are downscaled by the API — normalized 0..1
+  coordinates still work, but grounding precision may drop. If task 18's
+  IoU acceptance fails on Sonnet, first retry on Opus before reaching for
+  a dedicated grounding model.
+
 ## D-021 — App shell is React Native + Expo; ink canvas stays native Kotlin (supersedes D-008 UI stack)
 - **Date:** 2026-08-07
 - **Decision:** The Android app now lives in `lumina-app/` (Expo SDK 57,
