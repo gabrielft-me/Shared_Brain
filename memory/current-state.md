@@ -47,6 +47,14 @@ Snapshot of where the Oakland tutor project stands.
 - **Backend contract**: `uvicorn app.main:app` on 127.0.0.1:8000. Round-trip
   from a synthetic 2560×1600 composite PNG returned the expected
   `TutorResponse` (`hint`, `point`, `bbox`, `confidence`).
+- **Task 25 planned + phase 2 landed** (2026-08-07, later): three ink layers
+  in `LuminaBoardView` — permanent work ink (only layer undo/eraser touch),
+  fading AI ink (`ai_strokes`, injected, phase 3), red annotation ink
+  (ANNOTATE mode, cleared per upload). D-024 also pivots perception from
+  MediaProjection to canvas rasterization (`exportFrame`, phase 4). Kotlin
+  layer refactor compiles green; task 24 superseded → 25. Caveat:
+  `lumina-app/` is still untracked in Oakland-Education (refactor 23 pushes
+  5/6–6/6 pending), so the phase-2 Kotlin lives only in the working tree.
 - **Backend tasks 17–20 landed** (2026-08-07, later): provider interfaces
   `VisionAnalyzer` / `TargetLocator` / `TutorReasoner` with `noop` (default)
   and `anthropic` (`claude-opus-4-7`, structured outputs) implementations
