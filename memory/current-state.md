@@ -1,8 +1,15 @@
 # Current state — 2026-08-07
 
-Snapshot of where the Oakland tutor project stands vs.
-[`oakland-ai-math-tutor-cross-app-overlay-plan.md`](../oakland-ai-math-tutor-cross-app-overlay-plan.md).
-This file is a living index; overwrite when the state moves.
+Snapshot of where the Oakland tutor project stands.
+
+> **Architecture pivot.** As of 2026-08-07 (decision D-017), the tutor no
+> longer runs as system-wide `TYPE_APPLICATION_OVERLAY` windows over other
+> apps. It lives inside the app as a Goodnotes/Squid-style workspace.
+> `MediaProjection` is retained — the model still sees the whole physical
+> display. The reference plan
+> [`oakland-ai-math-tutor-cross-app-overlay-plan.md`](../oakland-ai-math-tutor-cross-app-overlay-plan.md)
+> §1, §4, §10, and §21 are historical; the in-app model is the shipping one.
+> Refactor tracking: [`../tasks/23-refactor-to-in-app-workspace.md`](../tasks/23-refactor-to-in-app-workspace.md).
 
 ## Repos
 - **Oakland-Education** (`github.com/christian2511/Oakland-Education`)

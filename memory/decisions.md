@@ -60,6 +60,61 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
 - **Decision:** `ScreenCaptureService` (foregroundServiceType=`mediaProjection`) owns projection/virtual-display/image-reader. `TutorOverlayService` owns WindowManager + overlay lifecycle. Overlay service starts/stops with capture service.
 - **Rationale:** Plan §9, §10 — keep capture and UI concerns split; hackathon can bind lifecycles.
 
+## D-017 — In-app workspace, not cross-app overlays (supersedes D-001, D-011, D-015)
+- **Date:** 2026-08-07
+- **Decision:** The tutor lives inside the app as a Goodnotes/Squid-style
+  workspace. `TYPE_APPLICATION_OVERLAY` windows are gone. `SYSTEM_ALERT_WINDOW`,
+  `FOREGROUND_SERVICE_SPECIAL_USE`, and `TutorOverlayService` are all removed.
+  `ScreenCaptureService` (foregroundServiceType=`mediaProjection`) remains
+  because the perception layer still captures the whole physical screen
+  (D-006 unchanged).
+- **Rationale:** Product pivot: student's math work happens inside the app's
+  own canvas. Removing the system-wide overlay path deletes a huge chunk of
+  permission friction and z-order bugs, and aligns with proven pen-note UX
+  (Goodnotes, Squid, Notability).
+- **Consequences:** Plan §1, §4 (three system windows), §10 (overlay
+  service), and §21 (overlay limitations) are historically informative but
+  no longer describe the shipping architecture.
+
+## D-018 — Two ink layers: persistent work + transient annotation
+- **Date:** 2026-08-07
+- **Decision:** The workspace has two overlaid ink surfaces. The lower
+  `WorkCanvas` holds the student's persistent math work (undoable, erasable,
+  color-selectable). The upper `AnnotationLayer` is only interactive in
+  ANNOTATE mode, holds transient red "ask about this" strokes, and is
+  cleared after every upload.
+- **Rationale:** Prevents the student's work strokes from being confused
+  with a "circle this" gesture at composite time; matches the two-layer
+  Option B compositing already decided in D-007.
+- **How to apply:** `FrameComposer` still composites over the MediaProjection
+  frame; the annotation strokes are the transient layer.
+
+## D-019 — Toolbar tool set: pen (3 colors) / highlighter / eraser / undo / redo / clear / AI
+- **Date:** 2026-08-07
+- **Decision:** Minimum viable Goodnotes-style toolbar. Pen tool has three
+  quick colors (black / blue / red). Highlighter is a semi-transparent
+  yellow stroke. Eraser removes whole strokes (stroke-eraser, not pixel).
+  Undo/redo affect the work canvas only. Clear wipes the work canvas.
+  **Ask AI** enters ANNOTATE mode.
+- **Rationale:** Small, decisive tool set to ship. Deliberately no lasso,
+  no shapes, no page navigation, no layers panel — those are out of scope
+  for the tutor MVP.
+- **How to apply:** Adding tools is fine later; do not reshape the
+  workspace to accommodate them (e.g. no left-side panel).
+
+## D-020 — WorkspaceBubble lives in-app, draggable within workspace only
+- **Date:** 2026-08-07
+- **Decision:** The AI dot from plan §4A survives as an in-app FAB rendered
+  by `WorkspaceBubble`. Drag is bounded by the workspace layout. Tap enters
+  ANNOTATE. Its background color reflects `SessionState` (idle/capturing/
+  awaiting/showing) as in the pre-refactor `BubbleOverlay`.
+- **Rationale:** Preserves the familiar AI-dot interaction without needing
+  a system overlay. Redundant with the toolbar's Ask AI button on purpose:
+  the toolbar is thumb-reach for pen-holders, the FAB is elbow-reach for
+  the free hand.
+- **How to apply:** Do not add a second draggable in the workspace; the
+  student's ink stroke would race with drag detection.
+
 ## D-013 — Toolchain bump: AGP 8.7.3 / Kotlin 2.0.21 / compileSdk 36 (supersedes D-009 SDK target)
 - **Date:** 2026-08-07
 - **Decision:** Root plugins now `com.android.application 8.7.3` + `org.jetbrains.kotlin.android 2.0.21` + `org.jetbrains.kotlin.plugin.compose 2.0.21`. `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26` unchanged.
