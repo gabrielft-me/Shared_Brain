@@ -1,6 +1,6 @@
 # Task 25 — Three ink layers in LuminaBoardView (work / AI / annotation)
 
-**Status:** in-progress (phase 2 done 2026-08-07; phases 3-7 pending)
+**Status:** in-progress (phases 2-3 done 2026-08-07; phases 4-7 pending)
 **Depends on:** lumina-app `LuminaBoardView` (D-021 canvas), 17/18 (backend grounding), 20 (session)
 **Supersedes:** 24 client sections (written for the deleted Compose workspace)
 **Related decisions:** D-018, D-021 (ai_strokes), D-022, D-024
@@ -149,3 +149,19 @@ choose `arrow`/`underline`/`label`.
   Note: `lumina-app/` is still untracked in the main repo (refactor 23
   pushes 5/6-6/6 pending), so the Kotlin change rides in the working tree
   until that lands.
+- 2026-08-07 — **Phase 3 done.** All three ink types now render:
+  `AiInkSynthesizer.kt` turns the semantic payload into androidx.ink
+  `Stroke`s via programmatic `MutableStrokeInputBatch.add(STYLUS, x, y, t,
+  pressure)` + `Stroke(brush, batch)` (API verified against the alpha07
+  AARs). Circle = 84-sample ellipse with angular wobble + 0.55 rad closure
+  overshoot; arrow = eased bowed shaft + separate 2-wing head stroke;
+  underline = sagged segment; all with a sin-profile pressure taper on a
+  pressure-pen brush. `injectAiInk(payloadJson)` (replace semantics,
+  `holdMs` in payload, default 8 s) + `ValueAnimator` hold→800 ms fade on
+  `aiAlpha`, cancel-safe (`clearAi`, re-inject, detach). Manager command
+  `injectAiInk` wired. `:app:compileDebugKotlin` green. Unknown kinds
+  (e.g. future `label`) are skipped, not errors. Device-visual check rides
+  with phase 7.
+- 2026-08-07 — Concurrent session note: another agent added finger-vs-
+  stylus brush fallback (`activeBrush(event)`) and touch flags to the same
+  file mid-phase; merged cleanly on top.
