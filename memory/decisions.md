@@ -261,3 +261,39 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
   wired into the RN flow. D-008's "Jetpack Compose" choice is superseded;
   D-006 (MediaProjection perception) and the backend contract (D-005, D-007)
   are unchanged.
+
+## D-026 — Tutor sessions bracket ONE question (record catch-up)
+- **Date:** 2026-08-08
+- **Decision:** A tutor session (D-023) spans a single curriculum question,
+  not a lesson. The client opens a session lazily on the first evaluation of
+  a question and ends it at every question boundary
+  (`LessonRunner.resetTutorSession`, fire-and-forget `session/end`).
+- **Rationale:** The reasoner folds the session transcript into its prompt
+  ("hints already given"); a lesson-long session would leak question-A hints
+  into question B. Already implemented and referenced in code as
+  "D-026-to-be" (`lumina-app/src/api/tutor.ts`); logged here to close it.
+- **Consequences:** Server idle-expiry stays the safety net for missed ends.
+
+## D-027 — Error marks: reasoner returns wrong-line bboxes; client renders a translucent RN overlay, never ink
+- **Date:** 2026-08-08
+- **Decision:** When the reasoner judges the visible work `incorrect`, it
+  also returns `error_marks` — up to 3 tight normalized bboxes around the
+  handwritten line(s)/term(s) where the work first goes wrong (checked line
+  by line, earliest first; location only, never the correction). The marks
+  ride on the EXISTING reasoner call as extra structured-output fields
+  (model-facing unconstrained floats, clamped server-side — the pointing
+  `_RawLocation` pattern), so Submit / "I'm stuck" (`mode=read`) gain
+  visual grounding with zero additional model round-trips. The client draws
+  them as discreet translucent pointers in a plain RN `pointerEvents="none"`
+  overlay above the board; the D-024 AI-ink layer is explicitly NOT used
+  for this — ink stays reserved for circle&ask tutor explanations.
+- **Rationale:** `mode=read` skipped pointing for latency, so submit/stuck
+  answered only in text. Reusing the reasoner call keeps the 7x latency win;
+  an RN overlay is cheaper and safer than synthesizing ink (no Kotlin
+  changes, no fade/export semantics to untangle) and reads as UI feedback
+  rather than tutor handwriting.
+- **Consequences:** `TutorResponse.error_marks` joins the wire contract
+  (empty unless incorrect; sent in both read and ask). Older clients ignore
+  it; the client defaults it to `[]` from older backends. Marks clear on new
+  evaluation, question advance, or emptied board. Full plan:
+  `tasks/26-error-marks-overlay.md`.
