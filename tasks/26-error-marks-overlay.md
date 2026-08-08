@@ -62,3 +62,17 @@ Client (`lumina-app/src/`):
   --noEmit` clean. NOTE: the Kotlin `tutor/TutorResponse.kt` DTO is stale
   dead code from the Compose app (lacks ai_strokes/status too) — the live
   contract is `lumina-app/src/api/tutor.ts`; Kotlin DTO left untouched.
+- 2026-08-08 — Live verification against the REAL Anthropic reasoner.
+  Root cause of "marks never show on device": the dev uvicorn (no
+  `--reload`, started pre-D-027) was serving old code — responses had no
+  `error_marks` field at all, and the client's `??= []` back-compat
+  silently masked it (device logs showed `status: incorrect` +
+  `error_marks: 0`). After restarting the server, a curl smoke test
+  (partial-distribution work on `3(x + 4) = 21`, `mode=read`) returned
+  `incorrect` + 2 marks. Rendering the bboxes over the frame shows x/width
+  land on the wrong lines but y sits ~1 line height BELOW the handwriting
+  (both boxes on empty space under lines 2/3). Model localization
+  imprecision, not a mapping bug — coords survive the 1568px thumbnail
+  downscale unchanged (aspect preserved). Open follow-up: nudge the
+  reasoner prompt on vertical anchoring and/or make the overlay marker
+  more visible (7% fill / 30% border is near-invisible on ruled paper).
