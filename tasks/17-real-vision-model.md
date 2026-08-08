@@ -1,6 +1,6 @@
 # Task 17 — Real vision-understanding model (§16 backend)
 
-**Status:** todo
+**Status:** done (code + noop verified; anthropic path awaits live-key run)
 **Depends on:** 08 (stub in place)
 **Blocks:** 19 (tutor reasoning consumes the understanding)
 
@@ -27,4 +27,13 @@ this as *Missing → Backend intelligence is stub*.
 - With `TUTOR_VISION_PROVIDER=noop`, behavior is unchanged.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `VisionAnalyzer` ABC with `NoopVisionAnalyzer` (canned scenarios
+  1/2/3, now enriched with domain/progress/misconceptions) and
+  `AnthropicVisionAnalyzer` (Claude `claude-opus-4-7`, adaptive thinking,
+  structured outputs via `messages.parse(output_format=Understanding)`,
+  prompt-cached system prompt). Typed `Understanding` Pydantic model added to
+  `schemas.py`. Selection via `TUTOR_VISION_PROVIDER` (default `noop`);
+  model override via `TUTOR_MODEL`. Key read from `ANTHROPIC_API_KEY` only.
+- 2026-08-07 — Noop acceptance verified end-to-end against the frontend
+  contract. Anthropic acceptance (distributive fixture names the distributive
+  property) not yet run: no `ANTHROPIC_API_KEY` on this machine.

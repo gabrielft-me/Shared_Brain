@@ -1,6 +1,6 @@
 # Task 20 — Backend session state (§16 backend)
 
-**Status:** todo
+**Status:** done (client wiring of session_id is future work — RN flow not yet wired, D-021)
 **Depends on:** 08
 
 ## Goal
@@ -27,4 +27,15 @@ just said or notice the student stuck on the same misconception.
   Sqlite ones.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `app/session.py`: `SessionStore` ABC + `InMemorySessionStore`
+  (default) + `SqliteSessionStore` (`TUTOR_SESSION_STORE=sqlite`,
+  `TUTOR_SESSION_DB` path). 2 h idle expiry. Turn records hold timestamp,
+  target description, hint, and a 160 px JPEG thumbnail (base64).
+- 2026-08-07 — Endpoints: `POST /v1/session/start` → `{session_id,
+  started_at}`; `POST /v1/session/{id}/end` → full transcript. `session_id`
+  is an **optional** form part on `/v1/tutor/query` — the current
+  `lumina-app` Kotlin client (`TutorApi.kt`) sends only image+geometry, so
+  the contract stays backward-compatible; unknown/expired ids → 404.
+- 2026-08-07 — Verified: start → two queries (history threaded into the
+  reasoner) → end returns 2-turn transcript; sqlite store survives a
+  restart and in-memory doesn't; ended sessions reject further turns.

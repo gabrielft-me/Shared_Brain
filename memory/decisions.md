@@ -164,3 +164,59 @@ Append-only; do not rewrite history. If a decision changes, add a new entry that
 - **Date:** 2026-08-07
 - **Decision:** Per `agents.md` rule 5, `goal.md` is human-owned. Agents can read it but never write. Currently it does not exist; leave it missing until the human creates it.
 - **Rationale:** Explicit repo instruction.
+
+## D-022 — Backend intelligence: Claude Opus 4.7 for all three layers; no dedicated grounding model
+- **Date:** 2026-08-07
+- **Decision:** Tasks 17/18/19 are implemented as provider-agnostic interfaces
+  (`VisionAnalyzer`, `TargetLocator`, `TutorReasoner`) with two implementations
+  each: `Noop*` (deterministic canned demos, the default) and `Anthropic*`.
+  The Anthropic path uses one model for all three layers — `claude-opus-4-7`
+  via the `anthropic` Python SDK, `messages.parse` structured outputs into
+  Pydantic schemas, adaptive thinking, and a prompt-cached system prompt.
+  Pointing (Task 18's option A) uses Claude with a strict JSON schema
+  returning normalized 0..1 coordinates, clamped server-side; no dedicated
+  grounding model (Molmo / Grounding DINO) is deployed.
+- **Rationale:** Opus 4.7 vision returns pixel-accurate coordinates
+  (high-res image support up to 2576 px long edge), which removes the main
+  argument for a separate grounding model; one provider keeps ops surface and
+  keys to a single vendor. Structured outputs remove hand-rolled JSON parsing.
+  Env-var selection (`TUTOR_{VISION,POINTING,REASONING}_PROVIDER`, default
+  `noop`; `TUTOR_MODEL` override) keeps demos runnable with no API key.
+- **Consequences:** Task 18's IoU acceptance and Task 19's rubric review still
+  need a live-key run. If pointing IoU disappoints on real fixtures, revisit a
+  dedicated grounding model behind the same `TargetLocator` interface.
+
+## D-023 — Session state: in-memory default, sqlite opt-in, session_id optional on the wire
+- **Date:** 2026-08-07
+- **Decision:** Task 20 ships `SessionStore` with `InMemorySessionStore`
+  (default) and `SqliteSessionStore` (`TUTOR_SESSION_STORE=sqlite`).
+  `session_id` is an *optional* multipart field on `/v1/tutor/query`;
+  `POST /v1/session/start` / `POST /v1/session/{id}/end` bracket a session.
+  Sessions expire after 2 h idle; transcripts carry hint, target,
+  timestamp, and a 160 px thumbnail per turn.
+- **Rationale:** The shipping Kotlin client (`lumina-app` `TutorApi.kt`)
+  sends only image+geometry today, so session support must not break the
+  existing contract. The Kotlin `TutorResponse` DTO also stays frozen —
+  `HintResult.follow_up_questions`/`next_step` remain server-side (session
+  transcript) until the client grows fields for them.
+
+## D-021 — App shell is React Native + Expo; ink canvas stays native Kotlin (supersedes D-008 UI stack)
+- **Date:** 2026-08-07
+- **Decision:** The Android app now lives in `lumina-app/` (Expo SDK 57,
+  expo-router, moti/reanimated, TypeScript). `lumina-web/` is the source of
+  truth for design and product flow; the RN app ports its tokens, screens and
+  copy 1:1. The handwriting board is the only UI surface implemented natively:
+  `android/app/src/main/java/com/oakland/tutor/board/LuminaBoardView.kt` on
+  `androidx.ink` (`InProgressStrokesView`), exposed to RN as `LuminaBoardView`
+  via a `SimpleViewManager`. **No fallback**: if androidx.ink fails to
+  initialise, the view throws and the failure is surfaced, by explicit request.
+- **Rationale:** Compose rebuilds could not hit pixel-feel parity with the web
+  design system at acceptable cost. Porting React to React Native reuses the
+  web components almost directly; only the latency-critical ink path needs
+  Kotlin.
+- **Consequences:** The old Gradle root project and `app/` (Compose) are
+  deleted. `capture/*`, `network/*` and the MediaProjection permission manager
+  were absorbed into `lumina-app/android/` and still compile; they are not yet
+  wired into the RN flow. D-008's "Jetpack Compose" choice is superseded;
+  D-006 (MediaProjection perception) and the backend contract (D-005, D-007)
+  are unchanged.

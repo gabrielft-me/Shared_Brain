@@ -1,6 +1,6 @@
 # Task 18 — Real pointing / grounding model (§16 backend)
 
-**Status:** todo
+**Status:** done (code + noop verified; IoU acceptance awaits live-key run)
 **Depends on:** 08 (stub in place)
 **Blocks:** 19
 
@@ -30,4 +30,14 @@ expression the student circled.
 - Deliberately circling empty space returns `selection_detected=false`.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `TargetLocator` ABC with `NoopTargetLocator` (previous fixed
+  coordinates) and `AnthropicTargetLocator`. Implementation choice: Claude
+  (`claude-opus-4-7`) with structured outputs returning a flat
+  `{found, x, y, bbox_*, confidence}` schema — no dedicated grounding model
+  (decision D-022). Opus 4.7 vision returns pixel-accurate coordinates, so
+  normalized 0..1 output is asked for directly and clamped server-side.
+  `found=false` or confidence < 0.4 (`pointing.MIN_CONFIDENCE`) →
+  `selection_detected=false` in `main.py`. `TUTOR_POINTING_PROVIDER` env,
+  default `noop`.
+- 2026-08-07 — IoU acceptance on the three demo fixtures + empty-space test
+  pending a machine with `ANTHROPIC_API_KEY`.

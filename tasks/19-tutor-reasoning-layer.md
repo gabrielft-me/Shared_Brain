@@ -1,6 +1,6 @@
 # Task 19 — Tutor reasoning layer (§16 backend)
 
-**Status:** todo
+**Status:** done (code + noop verified; 20-frame manual review awaits live-key run)
 **Depends on:** 17, 18, 20 (session state)
 
 ## Goal
@@ -27,4 +27,18 @@ Plan §16 and §12 require a real reasoning layer that turns
 - Rubric-violation log is empty in the happy path.
 
 ## Log
-- (fill in when working)
+- 2026-08-07 — `TutorReasoner.hint(image, understanding, target_description,
+  session_history) -> HintResult {hint, follow_up_questions, next_step}`
+  (`next_step` ∈ probe/hint/encourage/review, Pydantic model in `schemas.py`).
+  `NoopTutorReasoner` is the deterministic replay path for the Task 13 demos
+  (same three hints as before, plus follow-ups). `AnthropicTutorReasoner`:
+  composite image + Oakland Socratic rubric system prompt (never give the
+  answer, one hint/turn, ≤2 sentences, adapt to grade level, build on
+  history) + last 6 session turns from Task 20. `TUTOR_REASONING_PROVIDER`
+  env, default `noop`.
+- 2026-08-07 — Guard-rail: regex leak check (`answer is`, `x = <n>`,
+  `equals <n>` — deliberately not bare `= <n>` so restating the problem's own
+  equation doesn't trip it) → strict retry once → generic-probe fallback, with
+  `tutor.rubric` logger warnings on both violations. Heuristics unit-tested.
+- 2026-08-07 — 20-frame manual rubric review pending a machine with
+  `ANTHROPIC_API_KEY`.
