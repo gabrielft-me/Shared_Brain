@@ -54,9 +54,16 @@ Snapshot of where the Oakland tutor project stands.
   in `LessonRunner` (sparkles → annotate → export → upload → hint +
   `injectAiInk`). Verified: backend round-trip with `ai_strokes`,
   `assembleDebug` + `tsc` green, app boots on emulator with the new flow
-  and the ask-mode UI works. Pending: on-device ink-visual golden path —
-  blocked by a concurrent session hot-reloading the same emulator and its
-  in-flight finished-stroke rendering fix (see task 25 log).
+  and the ask-mode UI works.
+- **Task 25 fully done — AI ink renders on canvas** (2026-08-08): the
+  on-device golden path (write → circle → ask → terracotta AI circle →
+  8 s fade) is verified on the emulator. Blocking bug fixed: pressure was
+  passed positionally into `MutableStrokeInputBatch.add`'s 5th parameter,
+  which is `strokeUnitLengthCm`, not `pressure` — the synthesizer's taper
+  made native validation reject every AI batch, so `injectAiInk` always
+  died with an unhandled ViewCommand exception. Named-arg fix in
+  `AiInkSynthesizer.stroke` + `LuminaBoardView.addPoint`, plus per-primitive
+  try/catch in `synthesize` (task 25 log has the full writeup).
 - **Task 25 planned + phase 2 landed** (2026-08-07, later): three ink layers
   in `LuminaBoardView` — permanent work ink (only layer undo/eraser touch),
   fading AI ink (`ai_strokes`, injected, phase 3), red annotation ink

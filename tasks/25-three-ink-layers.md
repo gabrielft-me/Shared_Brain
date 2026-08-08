@@ -1,8 +1,8 @@
 # Task 25 — Three ink layers in LuminaBoardView (work / AI / annotation)
 
-**Status:** done except device visual pass (phases 2-6 done 2026-08-07;
-phase 7 verified everything scriptable — the on-device ink-visual walkthrough
-needs a quiet emulator, see log)
+**Status:** done (all phases incl. the on-device visual golden path,
+2026-08-08 — see log for the `MutableStrokeInputBatch.add` pressure-slot
+bug that was blocking AI ink from ever rendering)
 **Depends on:** lumina-app `LuminaBoardView` (D-021 canvas), 17/18 (backend grounding), 20 (session)
 **Supersedes:** 24 client sections (written for the deleted Compose workspace)
 **Related decisions:** D-018, D-021 (ai_strokes), D-022, D-024
@@ -227,3 +227,21 @@ choose `arrow`/`underline`/`label`.
   `ANTHROPIC_API_KEY` now lives in `backend/.env` (gitignored, Oakland
   `b71e1eb`); backend runs with `TUTOR_*_PROVIDER=anthropic` on
   `claude-sonnet-4-6` (D-025). Assessment commit: Oakland `d8863a9`.
+- 2026-08-08 — **Phase 7 visual pass done; AI-ink-never-rendered bug found
+  and fixed.** Root cause: alpha07's `MutableStrokeInputBatch.add(type, x,
+  y, elapsedTimeMillis, ...)` takes `strokeUnitLengthCm` as the **5th
+  positional parameter** — `pressure` is 6th. Both `AiInkSynthesizer.stroke`
+  and `LuminaBoardView.addPoint` passed pressure positionally, so it landed
+  in `strokeUnitLengthCm`: the synthesizer's varying taper (0.3→0.7) made
+  the native runtime reject the whole batch ("all inputs must report the
+  same stroke_unit_length" — injectAiInk died as an unhandled ViewCommand
+  exception, invisible to JS), and the touch path's constant finger
+  pressure explains both the historic "1cm vs 0cm" batch rejections and
+  pressurePen never seeing real stylus pressure. Fix: named `pressure =`
+  args in both call sites + try/catch per primitive in `synthesize` so one
+  rejected stroke can't kill the whole injection. Emulator golden path now
+  verified end-to-end: write → idle-read auto-evaluates → sparkles →
+  red circle annotation → "ask lumina" → annotation cleared, terracotta
+  AI circle (wobble/taper, #C4685E) renders above work ink → fades out
+  after the 8 s hold. Backend serving noop canned hints during the pass
+  (100–160 ms responses); wire format identical to the anthropic path.
