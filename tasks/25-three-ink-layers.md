@@ -259,3 +259,21 @@ choose `arrow`/`underline`/`label`.
   `read` (idle/I'm-stuck) skips the pointing call, `ask` keeps grounding
   + `ai_strokes`. Live read verified end-to-end: real handwriting frame →
   Sonnet assessment (`incorrect`/`incorrect_sum`) + Socratic hint in 13 s.
+- 2026-08-08 — **Phase 2 `label` shipped** (Oakland `8f59972`): text
+  labels render as handwriting, not typography. New `HandwritingFont.kt`
+  is a single-stroke glyph atlas (digits, a-z, math symbols; em-relative
+  pen paths as sparse control points — never font outlines, which read
+  as printed type no matter the brush). `AiInkSynthesizer.label()`
+  lays out glyphs with per-glyph baseline/size jitter + ~6° forward
+  slant, resamples each stroke with Catmull-Rom to ~ink density, adds
+  arc-length wobble + pressure taper (same humanizing family as the AI
+  circle), and batches through the existing pressure-pen path. Nib size
+  is capped em-relative so small labels don't read as marker. Randomness
+  is seeded from the text so re-injection is stable. `start` = top-left
+  of the em box, `height` = normalized em (digit top → baseline),
+  clamped to [10 dp, 25% of canvas]. Verified on emulator via temp
+  injection: `x = 9`, `2/3 + 1/4 = ?`, `check this step!` — round loops
+  (the old "square 9" symptom is gone), legible at 0.035 height. Note
+  for backend: the reasoner may now emit `kind: "label"` with
+  `{text, start, height}`; unknown characters are skipped (advance
+  only), text is lowercased.
