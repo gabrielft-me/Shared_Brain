@@ -1,6 +1,8 @@
 # Task 25 — Three ink layers in LuminaBoardView (work / AI / annotation)
 
-**Status:** in-progress (phases 2-4 done 2026-08-07; phases 5-7 pending)
+**Status:** done except device visual pass (phases 2-6 done 2026-08-07;
+phase 7 verified everything scriptable — the on-device ink-visual walkthrough
+needs a quiet emulator, see log)
 **Depends on:** lumina-app `LuminaBoardView` (D-021 canvas), 17/18 (backend grounding), 20 (session)
 **Supersedes:** 24 client sections (written for the deleted Compose workspace)
 **Related decisions:** D-018, D-021 (ai_strokes), D-022, D-024
@@ -182,3 +184,31 @@ choose `arrow`/`underline`/`label`.
 - 2026-08-07 — Second concurrent-session merge: paper/ink split into
   `PaperSurface` + `BoardSurface` (hardware-canvas drawMesh bug); export
   path adapted to compose both onto the software canvas.
+- 2026-08-07 — **Phase 5 done.** Backend: `AiStroke` Pydantic model
+  (semantic primitives, D-024 shape) + `TutorResponse.ai_strokes = []`;
+  `services/ai_ink.py` emits a circle inscribing the located bbox (8% pad)
+  when `selection_detected`. Round-trip verified: response carries the
+  circle centered on the bbox; six legacy fields untouched. Oakland commit
+  `e441a2b`.
+- 2026-08-07 — **Phase 6 done.** `src/api/tutor.ts` (fetch client:
+  `/v1/session/start` lazy + multipart `/v1/tutor/query` with file-URI
+  upload, 404-expired-session retry). `LuminaBoard` bridge: commands take
+  string args; new `onAnnotationChange`/`onFrameExported` props; web board
+  no-ops layer commands. `LessonRunner`: sparkles toggle enters ANNOTATE,
+  send bar ("circle the part first" → "ask lumina" / cancel), exportFrame →
+  upload → hint into `TutorBubble` (`needs_review` mapping) + `injectAiInk`
+  → `clearAnnotation` + back to WRITE; demo idle-evaluate suppressed while
+  asking. `tsc --noEmit` green.
+- 2026-08-07 — **Phase 7 (scriptable part) done; visual pass pending.**
+  Verified: backend round-trip with `ai_strokes` (noop); `:app:assembleDebug`
+  green; APK installs + boots on `emulator-5554` against the running Metro;
+  no `ReactNativeJS` errors; LessonRunner renders (paper + problem card);
+  ask-mode UI works end-to-end (sparkles toggles, send bar states);
+  stroke-end events flow native→JS (demo evaluate reacts to injected
+  swipes). **Not concluded:** on-screen ink visibility + the full
+  circle→ask→AI-ink visual round-trip — a concurrent agent session was
+  hot-reloading the same emulator mid-walkthrough (app state reset between
+  taps), and finished-stroke visibility on hardware canvas is that
+  session's active workstream. Re-run the golden path (write → sparkles →
+  circle → ask lumina → red AI circle fades ~8 s; `curl backend + adb`)
+  once the emulator is quiet and the rendering fix lands.

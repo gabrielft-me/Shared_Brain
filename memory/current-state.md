@@ -47,6 +47,16 @@ Snapshot of where the Oakland tutor project stands.
 - **Backend contract**: `uvicorn app.main:app` on 127.0.0.1:8000. Round-trip
   from a synthetic 2560×1600 composite PNG returned the expected
   `TutorResponse` (`hint`, `point`, `bbox`, `confidence`).
+- **Task 25 phases 2-6 complete, phase 7 scriptable part verified**
+  (2026-08-07, latest): all three ink layers implemented end-to-end —
+  Kotlin layer refactor + AI ink synthesizer + fade + `exportFrame`/scene
+  graph, backend `ai_strokes` (Oakland `e441a2b`), JS circle-and-ask flow
+  in `LessonRunner` (sparkles → annotate → export → upload → hint +
+  `injectAiInk`). Verified: backend round-trip with `ai_strokes`,
+  `assembleDebug` + `tsc` green, app boots on emulator with the new flow
+  and the ask-mode UI works. Pending: on-device ink-visual golden path —
+  blocked by a concurrent session hot-reloading the same emulator and its
+  in-flight finished-stroke rendering fix (see task 25 log).
 - **Task 25 planned + phase 2 landed** (2026-08-07, later): three ink layers
   in `LuminaBoardView` — permanent work ink (only layer undo/eraser touch),
   fading AI ink (`ai_strokes`, injected, phase 3), red annotation ink
