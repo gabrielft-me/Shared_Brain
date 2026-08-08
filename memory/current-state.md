@@ -112,3 +112,15 @@ Order that keeps each step demoable:
 6. **15** — re-run the checklist on real Samsung hardware.
 7. **21** — androidx.ink migration, only if 15 shows latency is a real blocker.
 8. **22** — HTTPS deployment before any user ships this.
+
+## 2026-08-07 — RN shop screen: real collectible artwork
+
+The RN `lumina-app` collection screen was rendering placeholder colored discs
+where the web shows the full illustrated collectible set. Ported
+`lumina-web/src/components/illustrations/Collectible.tsx` 1:1 to
+`lumina-app/src/primitives/Collectible.tsx` on `react-native-svg` (all 14
+shapes, same paths/gradients/faces/cast shadow; web palette key `lav` maps to
+native `lavender`). Locked/muted state is desaturation-in-code + 0.55 opacity
+since RN has no CSS `saturate()` filter. `app/(tabs)/shop.tsx` now passes
+`shape` through (tile + detail sheet) and its local disc placeholder is
+deleted. Per D-021 this keeps the RN port pixel-faithful to the web.
