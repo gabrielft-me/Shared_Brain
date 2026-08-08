@@ -1,6 +1,6 @@
 # Task 17 — Real vision-understanding model (§16 backend)
 
-**Status:** done (code + noop verified; anthropic path awaits live-key run)
+**Status:** done (live-verified 2026-08-08 on claude-sonnet-4-6)
 **Depends on:** 08 (stub in place)
 **Blocks:** 19 (tutor reasoning consumes the understanding)
 
@@ -37,3 +37,8 @@ this as *Missing → Backend intelligence is stub*.
 - 2026-08-07 — Noop acceptance verified end-to-end against the frontend
   contract. Anthropic acceptance (distributive fixture names the distributive
   property) not yet run: no `ANTHROPIC_API_KEY` on this machine.
+- 2026-08-08 — Live smoke pass on `claude-sonnet-4-6` (D-025): a real
+  `exportFrame` PNG (actual student handwriting pulled from the emulator)
+  produced a faithful Understanding — the reasoner's hint referenced the
+  exact expressions on the page. Formal distributive-fixture acceptance
+  still worth a scripted run.
