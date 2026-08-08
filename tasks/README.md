@@ -50,6 +50,12 @@ Progress statuses: `todo`, `in-progress`, `done`, `superseded`.
 | 21 | [21-androidx-ink-migration.md](21-androidx-ink-migration.md) | §16 (Jetpack Ink) | todo |
 | 22 | [22-backend-https-deployment.md](22-backend-https-deployment.md) | D-014 | todo |
 
+## Architecture pivot
+
+| # | File | Status |
+|---|------|--------|
+| 23 | [23-refactor-to-in-app-workspace.md](23-refactor-to-in-app-workspace.md) | done |
+
 ## Working agreement
 
 - Read [`../agents.md`](../agents.md) and [`../memory/decisions.md`](../memory/decisions.md)
