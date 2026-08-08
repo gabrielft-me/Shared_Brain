@@ -1,6 +1,6 @@
 # Task 25 — Three ink layers in LuminaBoardView (work / AI / annotation)
 
-**Status:** todo (planned 2026-08-07)
+**Status:** in-progress (phase 2 done 2026-08-07; phases 3-7 pending)
 **Depends on:** lumina-app `LuminaBoardView` (D-021 canvas), 17/18 (backend grounding), 20 (session)
 **Supersedes:** 24 client sections (written for the deleted Compose workspace)
 **Related decisions:** D-018, D-021 (ai_strokes), D-022, D-024
@@ -136,3 +136,16 @@ choose `arrow`/`underline`/`label`.
 ## Log
 - 2026-08-07 — Planned. Layer spec from product direction: permanent user
   ink as the data source, fading AI explanation ink, red circling ink.
+- 2026-08-07 — **Phase 2 done.** `LuminaBoardView`: `workStrokes` /
+  `annotationStrokes` / `aiStrokes` collections; `Mode { WRITE, ANNOTATE }`
+  with per-stroke routing via a `strokeLayer` map keyed on
+  `InProgressStrokeId` (recorded at ACTION_DOWN, resolved in
+  `onStrokesFinished`); ANNOTATE forces a fixed red marker (`ANNOTATION_RED`
+  #FF3B30, tool + eraser ignored); undo/redo/eraser/clear scoped to
+  `workStrokes` only; render order paper → work → AI (inside
+  `saveLayerAlpha(aiAlpha)`) → annotation; `clearAnnotation()`/`clearAi()`.
+  Manager: commands `setMode`/`clearAnnotation`/`clearAi`, event
+  `onAnnotationChange {count}`. `:app:compileDebugKotlin` green.
+  Note: `lumina-app/` is still untracked in the main repo (refactor 23
+  pushes 5/6-6/6 pending), so the Kotlin change rides in the working tree
+  until that lands.
