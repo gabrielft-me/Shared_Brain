@@ -47,31 +47,42 @@ This file is a living index; overwrite when the state moves.
 - **Android runtime**: never installed. `Medium_Tablet` AVD exists but has
   not been booted; no device has ever launched the app.
 
-## Missing vs. plan
-1. **Phase 7 polish** — task `Shared_Brain/tasks/07-phase7-polish.md` is still `todo`.
-   - Periodic frame-change detection / "normal monitoring" loop (plan §18, §19 step 30). Today capture only fires once, on annotation completion.
-   - Explicit session state machine (idle → capturing → awaiting → showing hint).
-   - Three canned misconception demos.
-   - Teacher summary UI (`ui/summary/SessionSummary.kt` is a placeholder).
-   - Samsung tablet + S Pen manual test checklist.
-2. **BubbleOverlay actions incomplete** — plan §4A lists request-hint,
-   collapse/expand, and stop-session. Today the bubble only enters ANNOTATE;
-   stopping requires returning to `MainActivity`.
-3. **Backend intelligence is stub** — `services/{vision,pointing,tutor}.py`
-   return canned values. Plan §16 requires a multimodal vision model, a
-   pointing/grounding model, a tutor-reasoning layer, and session state.
-   None of these are implemented.
-4. **Jetpack Ink not used** — plan §16 lists "Jetpack Ink / stylus handling".
-   `InkCanvas.kt` uses `awaitEachGesture` + Compose `Canvas`. Works, but
-   S Pen latency on Samsung will not match `androidx.ink`.
-5. **End-to-end walk-through** — plan §18 has never been demonstrated live
-   (bubble over Chrome, annotate, composite, backend, card).
+## Missing vs. plan — mapped to tasks
+
+Every gap now has an owning task under [`../tasks/`](../tasks/). See
+[`../tasks/README.md`](../tasks/README.md) for the full index +
+dependency map.
+
+| Gap | Owning task |
+|---|---|
+| Android build never executed under new toolchain | 09 |
+| App never installed / §18 never walked live | 10 |
+| Phase 7 — periodic frame-change detection (§19 step 30) | 11 |
+| Phase 7 — client session state machine (§19 step 31) | 12 |
+| Phase 7 — three canned misconception demos (§19 step 32) | 13 |
+| Phase 7 — teacher summary UI (§19 step 33) | 14 |
+| Phase 7 — Samsung tablet + S Pen checklist (§19 step 34) | 15 |
+| Bubble actions incomplete (§4A) | 16 |
+| Backend vision model is stub (§16) | 17 |
+| Backend pointing/grounding is stub (§12, §16) | 18 |
+| Backend tutor reasoning is stub (§16) | 19 |
+| Backend session state missing (§16) | 20 |
+| Jetpack Ink not used (§16) — conditional on 15 | 21 |
+| HTTPS deployment + drop cleartext (D-014) | 22 |
+
+Task 07 has been retired as an umbrella pointing at 11..15.
 
 ## Shortest path to close gaps
-1. `./gradlew :app:installDebug` on the `Medium_Tablet` AVD after starting
-   the backend; walk §18 by hand.
-2. Implement Phase 7 items (periodic capture loop + session state first,
-   then demos and summary UI).
-3. Replace backend stubs with real vision + pointing + reasoning calls.
-4. Consider migrating `InkCanvas` to `androidx.ink` if Samsung/S Pen latency
-   becomes a blocker.
+
+Order that keeps each step demoable:
+
+1. **09 → 10** — verify build; install on `Medium_Tablet`; walk plan §18 once.
+2. **11 → 12** — periodic capture + explicit session state (Phase 7 foundation).
+3. **13 → 14** — three demos + teacher summary using the new session state.
+4. **16** — bubble action menu (needs session state).
+5. **17 → 18 → 19** — replace backend stubs with real vision, pointing,
+   reasoning. Task 20 (backend session state) can run in parallel; task 19
+   depends on it.
+6. **15** — re-run the checklist on real Samsung hardware.
+7. **21** — androidx.ink migration, only if 15 shows latency is a real blocker.
+8. **22** — HTTPS deployment before any user ships this.
