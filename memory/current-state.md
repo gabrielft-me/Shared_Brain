@@ -134,3 +134,33 @@ native `lavender`). Locked/muted state is desaturation-in-code + 0.55 opacity
 since RN has no CSS `saturate()` filter. `app/(tabs)/shop.tsx` now passes
 `shape` through (tile + detail sheet) and its local disc placeholder is
 deleted. Per D-021 this keeps the RN port pixel-faithful to the web.
+
+## 2026-08-08 — LuminaBoardView: ink was authored but never rendered (fixed)
+
+Symptom reported as "canvas not reacting to touch": in fact touches always
+registered (tutor evaluated strokes) but no ink ever appeared. Root cause:
+ink-authoring's `InProgressStrokesView` front-buffer pipeline fails silently
+on emulators — live strokes never render and `onStrokesFinished` never fires,
+so strokes were authored yet never drawn or committed (zero logcat errors;
+confirmed via instrumentation: `BoardSurface.onDraw` ran with `work=0`
+forever while `startStroke` succeeded).
+
+Rewrite in `lumina-app/.../board/LuminaBoardView.kt`:
+- Authoring now uses `InProgressStroke` fed directly from `onTouchEvent`
+  (`MutableStrokeInputBatch` incl. historical points + pressure), committed
+  synchronously via `toImmutable()` on ACTION_UP. `InProgressStrokesView`,
+  `onStrokesFinished` and the stroke-id/layer map are gone.
+- Rendering: `CanvasStrokeRenderer.create(forcePathRendering = true)` — the
+  default `drawMesh` path is unreliable on emulator GPUs. Live stroke draws
+  in `BoardSurface.onDraw` on top of committed layers.
+- Paper guides live in a separate `PaperSurface` child under `BoardSurface`.
+- alpha07 native validation rejects whole input batches (duplicate
+  position+time points; rare spurious `stroke_unit_length` mismatch) —
+  points are deduped and `enqueueInputs` is wrapped in try/catch.
+
+Verified on Medium_Tablet emulator: pen strokes visible on ruled/grid/dot/
+blank papers, persist across paper switches, undo works, D-024 export path
+untouched (`renderTo` unchanged). Trade-off: no front-buffer low-latency
+path anywhere now — task 15/21 should re-measure S Pen latency on real
+Samsung hardware before deciding whether to bring a front-buffer variant
+back for stylus only.
