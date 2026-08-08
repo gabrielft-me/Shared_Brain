@@ -212,3 +212,18 @@ choose `arrow`/`underline`/`label`.
   session's active workstream. Re-run the golden path (write → sparkles →
   circle → ask lumina → red AI circle fades ~8 s; `curl backend + adb`)
   once the emulator is quiet and the rendering fix lands.
+- 2026-08-08 — **App de-hardcoded; every tutor path is the real backend.**
+  By user direction: `LessonRunner`'s simulated `evaluate()` (canned hint
+  array + forceCorrect) is gone. Idle-read, "I'm stuck" and circle-and-ask
+  all rasterize via `exportFrame` and hit `/v1/tutor/query`; requestId
+  prefix (`read`/`ask`) routes the response. Backend `HintResult` +
+  `TutorResponse` gained `status` (correct/incorrect/needs_review) and
+  `misconception` (snake_case id) — the reasoner assesses the visible work
+  in the same call; reasoner now also runs on annotation-less reads
+  (target: "the student's overall working"). `preferences.demoAlwaysCorrect`
+  survives as the labeled offline demo toggle. Noop canned hints gained
+  statuses/misconception ids (still the documented offline demo mode).
+  Verified: noop round-trip asserts status+misconception; `tsc` green.
+  `ANTHROPIC_API_KEY` now lives in `backend/.env` (gitignored, Oakland
+  `b71e1eb`); backend runs with `TUTOR_*_PROVIDER=anthropic` on
+  `claude-sonnet-4-6` (D-025). Assessment commit: Oakland `d8863a9`.
